@@ -28,7 +28,8 @@
 
 ## Как проверить
 ```bash
-make test WEEK=04
+STUDENT_ID=s13 GROUP=433 python3 -m pytest tests/test_week_04.py -v
 ```
+
 
 ![alt text](image-1.png)
