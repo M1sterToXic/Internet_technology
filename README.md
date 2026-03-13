@@ -5,4 +5,3 @@
 <img width="1186" height="419" alt="image" src="https://github.com/user-attachments/assets/1911012a-d9e0-466b-904e-902ab25b42af" />
 
 # WEEK-06
-![alt text](image.png)
