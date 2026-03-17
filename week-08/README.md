@@ -26,6 +26,6 @@
 
 ## Как проверить
 ```bash
-make test WEEK=08
+STUDENT_ID=s13 GROUP=433 python3 -m pytest weeks/week-08/tests/test_week_08.py -v
 ```
 Тест проверит, что ваш стриминг метод действительно отдает поток данных.
