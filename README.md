@@ -6,3 +6,9 @@
 
 # WEEK-06
 <img width="1162" height="388" alt="Image" src="https://github.com/user-attachments/assets/c45604fd-5aea-47ae-90ce-4fbcf18c1d21" />
+
+# WEEK-07
+<img width="2029" height="512" alt="Снимок экрана 2026-03-17 214335" src="https://github.com/user-attachments/assets/07161f15-6968-447d-b73c-89a627467a92" />
+
+# WEEK-06
+<img width="2029" height="346" alt="Снимок экрана 2026-03-17 222029" src="https://github.com/user-attachments/assets/2c3e86b4-4eeb-45a5-b539-b4b5b68adf3a" />
