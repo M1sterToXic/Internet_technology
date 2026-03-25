@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>orders-s13 — WebRTC P2P Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            background: #e0e0e0;
+        }
+        .status.connected { background: #c8e6c9; }
+        .status.disconnected { background: #ffcdd2; }
+        .buttons { margin: 15px 0; }
+        button {
+            padding: 10px 20px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button.primary { background: #2196F3; color: white; }
+        button.success { background: #4CAF50; color: white; }
+        button.danger { background: #f44336; color: white; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .chat-box {
+            border: 1px solid #ddd;
+            height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            margin: 10px 0;
+            background: #fafafa;
+        }
+        .message {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        .message.sent { background: #bbdefb; text-align: right; }
+        .message.received { background: #e8f5e9; }
+        .message.system { background: #fff3e0; font-style: italic; }
+        .input-area { display: flex; gap: 10px; }
+        .input-area input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📡 orders-s13 — WebRTC P2P Chat</h1>
+        
+        <div id="status" class="status disconnected">
+            Статус: Не подключено
+        </div>
+        
+        <div class="buttons">
+            <button id="createOfferBtn" class="primary" onclick="createOffer()">Создать предложение (Offer)</button>
+            <button id="createAnswerBtn" class="primary" onclick="createAnswer()">Создать ответ (Answer)</button>
+            <button id="closeConnectionBtn" class="danger" onclick="closeConnection()" disabled>Закрыть соединение</button>
+        </div>
+        
+        <div class="chat-box" id="chatBox">
+            <div class="message system">Добро пожаловать в WebRTC чат! Откройте эту страницу в двух вкладках для тестирования P2P соединения.</div>
+        </div>
+        
+        <div class="input-area">
+            <input type="text" id="messageInput" placeholder="Введите сообщение..." onkeypress="handleKeyPress(event)">
+            <button class="success" onclick="sendMessage()" id="sendBtn" disabled>Отправить</button>
+        </div>
+        
+        <div class="info">
+            <p><strong>Project Code:</strong> orders-s13</p>
+            <p><strong>Как это работает:</strong></p>
+            <ol>
+                <li>Запустите signaling server: <code>python weeks/week-09/starter/signaling.py</code></li>
+                <li>Откройте эту страницу в двух вкладках браузера</li>
+                <li>В первой вкладке нажмите "Создать предложение (Offer)"</li>
+                <li>Во второй вкладке нажмите "Создать ответ (Answer)"</li>
+                <li>После установления соединения отправляйте сообщения</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Project code из варианта
+        const PROJECT_CODE = 'orders-s13';
+        
+        // Signaling server URL
+        const SIGNALING_URL = 'ws://localhost:8765';
+        
+        // STUN сервера (бесплатные от Google)
+        const STUN_SERVERS = {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' }
+            ]
+        };
+        
+        // Глобальные переменные
+        let peerConnection = null;
+        let dataChannel = null;
+        let websocket = null;
+        let isInitiator = false;
+        
+        // Элементы UI
+        const statusDiv = document.getElementById('status');
+        const chatBox = document.getElementById('chatBox');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const createOfferBtn = document.getElementById('createOfferBtn');
+        const createAnswerBtn = document.getElementById('createAnswerBtn');
+        const closeConnectionBtn = document.getElementById('closeConnectionBtn');
+        
+        // Подключение к signaling server
+        function connectToSignaling() {
+            websocket = new WebSocket(SIGNALING_URL);
+            
+            websocket.onopen = () => {
+                updateStatus('Подключено к signaling server', 'connected');
+                console.log('Connected to signaling server');
+            };
+            
+            websocket.onmessage = async (event) => {
+                const message = JSON.parse(event.data);
+                console.log('Received signaling message:', message.type);
+                
+                if (message.type === 'offer') {
+                    await handleOffer(message.offer);
+                } else if (message.type === 'answer') {
+                    await handleAnswer(message.answer);
+                } else if (message.type === 'ice-candidate') {
+                    await handleIceCandidate(message.candidate);
+                } else if (message.type === 'chat') {
+                    // P2P сообщение через data channel (не через signaling)
+                    addMessage(message.text, 'received');
+                }
+            };
+            
+            websocket.onclose = () => {
+                updateStatus('Signaling server отключён', 'disconnected');
+                console.log('Disconnected from signaling server');
+            };
+            
+            websocket.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                updateStatus('Ошибка подключения к signaling server', 'disconnected');
+            };
+        }
+        
+        // Создание RTCPeerConnection
+        function createPeerConnection() {
+            peerConnection = new RTCPeerConnection(STUN_SERVERS);
+            
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    console.log('New ICE candidate:', event.candidate);
+                    sendSignalingMessage({
+                        type: 'ice-candidate',
+                        candidate: event.candidate
+                    });
+                }
+            };
+            
+            peerConnection.oniceconnectionstatechange = () => {
+                console.log('ICE connection state:', peerConnection.iceConnectionState);
+                if (peerConnection.iceConnectionState === 'connected') {
+                    updateStatus('P2P соединение установлено!', 'connected');
+                    sendBtn.disabled = false;
+                    closeConnectionBtn.disabled = false;
+                } else if (peerConnection.iceConnectionState === 'disconnected' || 
+                           peerConnection.iceConnectionState === 'failed') {
+                    updateStatus('P2P соединение разорвано', 'disconnected');
+                    sendBtn.disabled = true;
+                }
+            };
+            
+            peerConnection.ondatachannel = (event) => {
+                console.log('Received data channel:', event.channel.label);
+                dataChannel = event.channel;
+                setupDataChannel();
+            };
+            
+            return peerConnection;
+        }
+        
+        // Настройка data channel
+        function setupDataChannel() {
+            dataChannel.onopen = () => {
+                console.log('Data channel opened');
+                addMessage('Data channel открыт. Можно отправлять сообщения!', 'system');
+            };
+            
+            dataChannel.onclose = () => {
+                console.log('Data channel closed');
+                addMessage('Data channel закрыт', 'system');
+            };
+            
+            dataChannel.onerror = (error) => {
+                console.error('Data channel error:', error);
+            };
+            
+            dataChannel.onmessage = (event) => {
+                console.log('Received message:', event.data);
+                addMessage(event.data, 'received');
+            };
+        }
+        
+        // Создать offer (инициатор соединения)
+        async function createOffer() {
+            isInitiator = true;
+            createPeerConnection();
+            
+            // Создаём data channel
+            dataChannel = peerConnection.createDataChannel('chat');
+            setupDataChannel();
+            
+            // Создаем SDP offer
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            
+            console.log('Created offer:', offer);
+            
+            // Ждём когда ICE соберёт кандидатов
+            setTimeout(() => {
+                sendSignalingMessage({
+                    type: 'offer',
+                    offer: peerConnection.localDescription
+                });
+                addMessage('Offer отправлен. Ждём answer от второй вкладки...', 'system');
+            }, 1000);
+        }
+        
+        // Создать answer (отвечающая сторона)
+        async function createAnswer() {
+            isInitiator = false;
+            createPeerConnection();
+            addMessage('Нажмите "Создать предложение" в другой вкладке, затем я создам answer', 'system');
+        }
+        
+        // Обработка полученного offer
+        async function handleOffer(offer) {
+            if (!peerConnection) {
+                createPeerConnection();
+            }
+            
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+            console.log('Set remote description (offer)');
+            
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            console.log('Created answer:', answer);
+            
+            setTimeout(() => {
+                sendSignalingMessage({
+                    type: 'answer',
+                    answer: peerConnection.localDescription
+                });
+                addMessage('Answer отправлен. Соединение устанавливается...', 'system');
+            }, 1000);
+        }
+        
+        // Обработка полученного answer
+        async function handleAnswer(answer) {
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+            console.log('Set remote description (answer)');
+            addMessage('Answer получен. Соединение устанавливается...', 'system');
+        }
+        
+        // Обработка ICE candidate
+        async function handleIceCandidate(candidate) {
+            if (peerConnection) {
+                try {
+                    await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+                    console.log('Added ICE candidate');
+                } catch (error) {
+                    console.error('Error adding ICE candidate:', error);
+                }
+            }
+        }
+        
+        // Отправка сообщения через signaling
+        function sendSignalingMessage(message) {
+            if (websocket && websocket.readyState === WebSocket.OPEN) {
+                websocket.send(JSON.stringify(message));
+            }
+        }
+        
+        // Отправка сообщения через data channel
+        function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text) return;
+            
+            if (dataChannel && dataChannel.readyState === 'open') {
+                dataChannel.send(text);
+                addMessage(text, 'sent');
+                messageInput.value = '';
+            } else {
+                addMessage('Data channel не открыт. Дождитесь установления соединения.', 'system');
+            }
+        }
+        
+        // Обработка Enter в поле ввода
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        
+        // Закрытие соединения
+        function closeConnection() {
+            if (dataChannel) {
+                dataChannel.close();
+            }
+            if (peerConnection) {
+                peerConnection.close();
+            }
+            if (websocket) {
+                websocket.close();
+            }
+            
+            dataChannel = null;
+            peerConnection = null;
+            websocket = null;
+            
+            sendBtn.disabled = true;
+            closeConnectionBtn.disabled = true;
+            createOfferBtn.disabled = false;
+            createAnswerBtn.disabled = false;
+            
+            updateStatus('Соединение закрыто', 'disconnected');
+            addMessage('Соединение закрыто', 'system');
+            
+            // Переподключаемся к signaling
+            setTimeout(connectToSignaling, 1000);
+        }
+        
+        // Обновление статуса
+        function updateStatus(text, state) {
+            statusDiv.textContent = 'Статус: ' + text;
+            statusDiv.className = 'status ' + state;
+        }
+        
+        // Добавление сообщения в чат
+        function addMessage(text, type) {
+            const div = document.createElement('div');
+            div.className = 'message ' + type;
+            div.textContent = text;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+        
+        // Инициализация при загрузке
+        window.onload = () => {
+            console.log('WebRTC client loaded. Project:', PROJECT_CODE);
+            connectToSignaling();
+        };
+    </script>
+</body>
+</html>
