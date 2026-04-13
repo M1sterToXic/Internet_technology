@@ -27,6 +27,6 @@
 
 ## Как проверить
 ```bash
-make test WEEK=11
+STUDENT_ID=s13 GROUP=433 python3 -m pytest weeks/week-11/tests/test_week_11.py -v
 ```
 Тест проверит валидность YAML файла и наличие необходимых секций.
