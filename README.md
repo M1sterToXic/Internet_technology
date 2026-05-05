@@ -25,3 +25,9 @@
 # WEEK-12
 <img width="2111" height="339" alt="image" src="https://github.com/user-attachments/assets/6b02043f-0b06-458b-803a-8779563c7266" />
 
+# WEEK-13
+<img width="2130" height="338" alt="Снимок экрана 2026-05-05 143019" src="https://github.com/user-attachments/assets/69524059-d554-470d-b1f1-14a79939c3ae" />
+
+# WEEK-14
+<img width="2125" height="338" alt="Снимок экрана 2026-05-05 144305" src="https://github.com/user-attachments/assets/1b63dde8-9161-4036-b040-3b8203f840ba" />
+
