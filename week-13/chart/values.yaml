@@ -1,0 +1,14 @@
+replicaCount: 1
+image:
+  repository: products-svc-s13
+  tag: latest
+service:
+  name: products-svc-s13
+  port: 8183
+resources:
+  requests:
+    memory: "64Mi"
+    cpu: "250m"
+  limits:
+    memory: "128Mi"
+    cpu: "500m"
