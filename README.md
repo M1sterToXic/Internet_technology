@@ -31,3 +31,6 @@
 # WEEK-14
 <img width="2125" height="338" alt="Снимок экрана 2026-05-05 144305" src="https://github.com/user-attachments/assets/1b63dde8-9161-4036-b040-3b8203f840ba" />
 
+# WEEK-14
+<img width="2085" height="317" alt="image" src="https://github.com/user-attachments/assets/360a8122-259b-46f9-baa7-bcc712dbecfe" />
+
