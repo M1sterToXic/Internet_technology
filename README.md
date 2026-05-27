@@ -1,35 +1,41 @@
-# Финальный проект
+# WEEK-04
+<img width="1182" height="371" alt="image" src="https://github.com/user-attachments/assets/c81ebd6c-1ae5-4feb-a724-e2c53a14ea75" />
 
-## Задача
-Поздравляем! Вы дошли до финала. Теперь у вас есть набор знаний, который необходимо объединить в общую картину: REST, gRPC, Docker, K8s, CI/CD.
-Пришло время собрать всё это вместе в один финальный проект.
+# WEEK-05
+<img width="1186" height="419" alt="image" src="https://github.com/user-attachments/assets/1911012a-d9e0-466b-904e-902ab25b42af" />
 
-## Ваш вариант
-`variants/<GROUP>/<STUDENT_ID>/week-17.json`
-Там описана тема вашего проекта (например, "Сервис доставки еды" или "Трекер задач").
+# WEEK-06
+<img width="1162" height="388" alt="Image" src="https://github.com/user-attachments/assets/c45604fd-5aea-47ae-90ce-4fbcf18c1d21" />
 
-## Что нужно сделать
-1. **Архитектура**:
-   - Спроектируйте систему из 2-3 микросервисов.
-   - Опишите её в `ARCHITECTURE.md` (кто с кем общается, какие базы данных, какие протоколы).
-2. **Реализация**:
-   - Напишите код сервисов (можно переиспользовать код с прошлых недель).
-   - Выберите протокол осознанно: где-то REST для фронтенда, где-то gRPC для межсервисного общения.
-3. **Инфраструктура**:
-   - Упакуйте всё в Docker.
-   - Напишите docker-compose для локального запуска.
-   - (Опционально) Helm чарт для Кубернетиса.
-   - Настройте (или опишите) CI пайплайн.
-4. **Сдача**:
-   - Проект должен запускаться одной командой и иметь документацию.
+# WEEK-07
+<img width="2029" height="512" alt="Снимок экрана 2026-03-17 214335" src="https://github.com/user-attachments/assets/07161f15-6968-447d-b73c-89a627467a92" />
 
-## Что сдавать
-1. Полный код проекта.
-2. `ARCHITECTURE.md`.
-3. Инструкция по запуску.
+# WEEK-08
+<img width="2029" height="346" alt="Снимок экрана 2026-03-17 222029" src="https://github.com/user-attachments/assets/2c3e86b4-4eeb-45a5-b539-b4b5b68adf3a" />
 
-## Как проверить
-```bash
-make test WEEK=17
-```
-Тест проверит наличие основных файлов и документации.
+# WEEK-09
+<img width="1063" height="423" alt="Снимок экрана 2026-03-25 121758" src="https://github.com/user-attachments/assets/0d72d8f0-cd59-41cc-8e88-c2c1eee7e9dd" />
+
+# WEEK-10
+<img width="2070" height="347" alt="image" src="https://github.com/user-attachments/assets/19bc86c5-50d6-4777-9025-b793dde38747" />
+
+# WEEK-11
+<img width="2106" height="319" alt="image" src="https://github.com/user-attachments/assets/b93751a6-3b80-421f-97b8-ce4bff42b629" />
+
+# WEEK-12
+<img width="2111" height="339" alt="image" src="https://github.com/user-attachments/assets/6b02043f-0b06-458b-803a-8779563c7266" />
+
+# WEEK-13
+<img width="2130" height="338" alt="Снимок экрана 2026-05-05 143019" src="https://github.com/user-attachments/assets/69524059-d554-470d-b1f1-14a79939c3ae" />
+
+# WEEK-14
+<img width="2125" height="338" alt="Снимок экрана 2026-05-05 144305" src="https://github.com/user-attachments/assets/1b63dde8-9161-4036-b040-3b8203f840ba" />
+
+# WEEK-15
+<img width="2085" height="317" alt="image" src="https://github.com/user-attachments/assets/360a8122-259b-46f9-baa7-bcc712dbecfe" />
+
+# WEEK-16
+<img width="2070" height="338" alt="image" src="https://github.com/user-attachments/assets/aeda895a-3a83-419d-952e-55f06b56d82e" />
+
+# WEEK-17
+<img width="2084" height="341" alt="image" src="https://github.com/user-attachments/assets/abfc895b-757d-4a85-ad53-4c7419fb4758" />
