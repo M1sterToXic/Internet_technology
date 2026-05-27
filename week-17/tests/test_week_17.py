@@ -3,7 +3,7 @@ from coursekit.koan import need
 from coursekit.variant import load_variant
 
 ROOT = Path(__file__).resolve().parents[3]
-ARCH = ROOT / 'weeks' / 'week-17' / 'ARCHITECTURE.md'
+ARCH = ROOT / 'week-17' / 'ARCHITECTURE.md'
 
 
 def test_capstone_arch():
