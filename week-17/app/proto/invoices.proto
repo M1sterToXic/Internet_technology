@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package invoices.v1;
+
+service InvoicesService {
+  rpc GetInvoice (GetInvoiceRequest) returns (GetInvoiceResponse);
+  rpc CreateInvoice (CreateInvoiceRequest) returns (CreateInvoiceResponse);
+  rpc ListInvoices (ListInvoicesRequest) returns (stream Invoice);
+}
+
+message Invoice {
+  string id = 1;
+  string name = 2;
+  float amount = 3;
+}
+
+message GetInvoiceRequest {
+  string id = 1;
+}
+
+message GetInvoiceResponse {
+  Invoice invoice = 1;
+}
+
+message CreateInvoiceRequest {
+  string name = 1;
+  float amount = 2;
+}
+
+message CreateInvoiceResponse {
+  Invoice invoice = 1;
+}
+
+message ListInvoicesRequest {
+  int32 limit = 1;
+}

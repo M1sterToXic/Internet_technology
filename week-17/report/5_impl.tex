@@ -1,0 +1,28 @@
+\section{ПРОГРАММНАЯ РЕАЛИЗАЦИЯ КОМПОНЕНТОВ}
+
+\subsection{Реализация gRPC-контракта и сервера}
+Сердцем системы является файл \texttt{invoices.proto}, определяющий структуру сообщений и методы сервиса. Сервер реализует эти методы, обеспечивая обработку запросов.
+
+\begin{lstlisting}[language=Python, caption=Метод CreateInvoice в Invoices Service]
+def CreateInvoice(self, request, context):
+    new_id = str(len(self._invoices) + 1)
+    invoice = invoices_pb2.Invoice(id=new_id, name=request.name, amount=request.amount)
+    self._invoices[new_id] = invoice
+    return invoices_pb2.CreateInvoiceResponse(invoice=invoice)
+\end{lstlisting}
+
+\subsection{Реализация REST-шлюза на FastAPI}
+Шлюз выполняет роль адаптера. Он принимает POST и GET запросы, формирует соответствующие gRPC сообщения и возвращает результат клиенту.
+
+\begin{lstlisting}[language=Python, caption=Эндпоинт для создания счета в Gateway]
+@app.post("/api/invoices", response_model=InvoiceSchema, status_code=201)
+async def create_invoice(invoice: CreateInvoiceSchema):
+    client = get_grpc_client()
+    response = client.CreateInvoice(invoices_pb2.CreateInvoiceRequest(
+        name=invoice.name, amount=invoice.amount
+    ))
+    return InvoiceSchema(id=response.invoice.id, name=response.invoice.name, amount=response.invoice.amount)
+\end{lstlisting}
+
+\subsection{Система обработки исключительных ситуаций}
+В шлюзе реализован механизм перехвата ошибок gRPC (например, \texttt{StatusCode.NOT\_FOUND}) и их преобразования в соответствующие HTTP-статусы (404), что обеспечивает корректное поведение API.

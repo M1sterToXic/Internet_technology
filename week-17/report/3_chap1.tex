@@ -1,0 +1,57 @@
+\section{ОСНОВНАЯ ЧАСТЬ}
+
+\subsection{Архитектура и взаимодействие компонентов}
+Разработанная система управления счетами (\texttt{invoices-s13}) состоит из двух функциональных блоков, каждый из которых функционирует в изолированной среде:
+\begin{enumerate}
+    \item \textbf{Invoices Service} (Backend): Реализует основные операции над счетами (создание, чтение списка, поиск по ID). Взаимодействие осуществляется по протоколу gRPC на порту 8228. Сервис хранит данные в оперативной памяти (in-memory storage), что позволяет продемонстрировать логику работы без усложнения инфраструктуры внешними СУБД на данном этапе.
+    \item \textbf{API Gateway} (Frontend Proxy): Выступает в роли посредника. Принимает внешние HTTP-запросы в формате REST (порт 8000), выполняет их трансляцию в gRPC-вызовы и возвращает результат клиенту в формате JSON.
+\end{enumerate}
+
+Схема информационных потоков:
+\texttt{[External Client] -> (REST/JSON) -> [Gateway] -> (gRPC/Protobuf) -> [Invoices Service]}.
+
+\subsection{Проектирование gRPC интерфейса}
+Основой взаимодействия между сервисами является контракт, описанный на языке IDL (Interface Definition Language) в формате Protocol Buffers. Использование gRPC позволяет гарантировать целостность данных за счет строгой типизации полей.
+
+\begin{lstlisting}[language=bash, caption=Контракт Invoices (invoices.proto)]
+syntax = "proto3";
+package invoices.v1;
+
+service InvoicesService {
+  rpc GetInvoice (GetInvoiceRequest) returns (GetInvoiceResponse);
+  rpc CreateInvoice (CreateInvoiceRequest) returns (CreateInvoiceResponse);
+  rpc ListInvoices (ListInvoicesRequest) returns (stream Invoice);
+}
+
+message Invoice {
+  string id = 1;
+  string name = 2;
+  float amount = 3; // Индивидуальное поле варианта s13
+}
+\end{lstlisting}
+
+\subsection{Реализация логики сервисов}
+Сервис \texttt{invoices-svc-s13} реализован с использованием библиотеки \texttt{grpcio}. Особое внимание уделено реализации метода \texttt{ListInvoices}, использующего механизм серверного стриминга для эффективной передачи больших списков данных.
+
+Шлюз реализован на базе асинхронного фреймворка FastAPI. Для каждой REST-операции создается gRPC-канал связи с бэкендом.
+
+\begin{lstlisting}[language=Python, caption=Реализация метода создания счета в Gateway]
+@app.post("/api/invoices", response_model=InvoiceSchema, status_code=201)
+async def create_invoice(invoice: CreateInvoiceSchema):
+    client = get_grpc_client()
+    try:
+        # Вызов gRPC метода бэкенда
+        response = client.CreateInvoice(invoices_pb2.CreateInvoiceRequest(
+            name=invoice.name, 
+            amount=invoice.amount
+        ))
+        i = response.invoice
+        return InvoiceSchema(id=i.id, name=i.name, amount=i.amount)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+\end{lstlisting}
+
+\subsection{Контейнеризация и инфраструктура}
+Для каждого сервиса подготовлен \texttt{Dockerfile}, описывающий среду выполнения (Python 3.11-slim) и необходимые зависимости. Сборка и запуск всей системы автоматизированы через \texttt{docker-compose.yml}.
+
+Использование Docker-сетей обеспечивает внутренний DNS-резолвинг: шлюз обращается к бэкенду по имени сервиса \texttt{invoices-svc-s13}, что соответствует принципам Service Discovery в распределенных системах.
