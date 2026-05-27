@@ -1,0 +1,22 @@
+\selectlanguage *{russian}
+\contentsline {section}{ВВЕДЕНИЕ}{2}{Doc-Start}%
+\contentsline {section}{\numberline {1}ПОСТАНОВКА ЗАДАЧИ (INVOICES-S13)}{3}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Назначение информационной системы}{3}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Функциональные требования к системе}{3}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Нефункциональные требования}{3}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Спецификация варианта s13}{3}{subsection.1.4}%
+\contentsline {section}{\numberline {2}АРХИТЕКТУРА СИСТЕМЫ УПРАВЛЕНИЯ СЧЕТАМИ}{4}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Компонентная структура и распределение ролей}{4}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Стек протоколов и обоснование выбора}{4}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Модель управления данными и жизненный цикл}{5}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Оркестрация и Service Discovery}{5}{subsection.2.4}%
+\contentsline {section}{\numberline {3}ПРОГРАММНАЯ РЕАЛИЗАЦИЯ КОМПОНЕНТОВ}{6}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Реализация gRPC-контракта и сервера}{6}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Реализация REST-шлюза на FastAPI}{6}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Система обработки исключительных ситуаций}{6}{subsection.3.3}%
+\contentsline {section}{\numberline {4}КОНТЕЙНЕРИЗАЦИЯ, ТЕСТИРОВАНИЕ И РАЗВЕРТЫВАНИЕ}{7}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Спецификация контейнеров (Docker)}{7}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Сценарии верификации работоспособности}{7}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Автоматизация сборки и тестирования}{7}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Ограничения и потенциал развития}{7}{subsection.4.4}%
+\contentsline {section}{ЗАКЛЮЧЕНИЕ}{8}{subsection.4.4}%
