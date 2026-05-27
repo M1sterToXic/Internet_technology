@@ -21,4 +21,4 @@ jobs:
         pip install -r requirements.txt
     - name: Run tests
       run: |
-        STUDENT_ID=s13 GROUP=433 python3 -m pytest weeks/week-17/tests/test_week_17.py
+        STUDENT_ID=s13 GROUP=433 python3 -m pytest week-17/tests/test_week_17.py
